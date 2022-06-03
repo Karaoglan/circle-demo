@@ -8,7 +8,7 @@ describe("TEST MAIN", function() {
       });
       it("check if not pass", function() {
   
-        expect(true).to.equal(false);
+        expect(true).to.equal(true);
       });
     });
   

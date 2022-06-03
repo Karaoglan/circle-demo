@@ -17,14 +17,31 @@ jobs:
           root: ~/project
           paths:
             - .
+      - setup_remote_docker:
+          version: 18.06.0-ce
+      - build:
+          name: Build Docker image
+          command: |
+            docker build -t circle-demo:1.0.0 .
+            docker images
 
-  deploy: # this can be any name you choose
+  deploy:
     executor: heroku/default
     steps:
-      - attach_workspace:
-          at: ~/project
-      - heroku/deploy-via-git:
-          force: true # force push when pushing to the heroku remote, see: https://devcenter.heroku.com/articles/git
+      - checkout
+      - run:
+          name: Storing previous commit
+          command: |
+            git rev-parse HEAD > ./commit.txt
+      - heroku/install
+      - setup_remote_docker:
+          version: 18.06.0-ce
+      - run:
+          name: Pushing to heroku registry
+          command: |
+            heroku container:login
+            heroku container:push web --arg NODE_ENV=production -a $HEROKU_APP_NAME
+            heroku container:release web -a $HEROKU_APP_NAME
 
 workflows:
   test_my_app:

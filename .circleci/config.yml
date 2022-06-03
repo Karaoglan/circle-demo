@@ -13,17 +13,17 @@ jobs:
       - run:
           command: yarn test
           name: Run tests
-      - persist_to_workspace:
-          root: ~/project
-          paths:
-            - .
       - setup_remote_docker:
           version: 18.06.0-ce
-      - build:
+      - run:
           name: Build Docker image
           command: |
             docker build -t circle-demo:1.0.0 .
             docker images
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - .
 
   deploy:
     executor: heroku/default
